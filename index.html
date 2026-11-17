@@ -164,6 +164,15 @@ fieldset{border:0; margin:0; padding:0; min-width:0}
 .hold-box{max-width:28rem; text-align:center; padding:1.6rem; border-radius:14px; background:var(--card); border:2px solid var(--ink); box-shadow:var(--shadow)}
 .hold-box h2{font-family:var(--display); font-weight:400; font-size:2.1rem; margin:0 0 .4rem}
 .hold-box .count{font-family:var(--display); font-size:3.4rem; color:var(--danger); font-variant-numeric:tabular-nums; line-height:1}
+/* Screenshot guard: the Ghost */
+body.haunted .wrap{filter:blur(18px) grayscale(.7) contrast(.8); transition:filter .15s ease}
+.haunt{position:fixed; inset:0; z-index:60; display:grid; place-items:center; padding:1rem; background:rgba(14,18,26,.55)}
+.haunt-box{max-width:26rem; text-align:center; color:#EEF3F7}
+.haunt-box h2{font-family:var(--display); font-weight:400; font-size:2.3rem; margin:.2rem 0 .3rem}
+.haunt-box p{margin:0 0 .6rem; font-size:1.05rem}
+.haunt-box .count{font-family:var(--display); font-size:3rem; line-height:1; font-variant-numeric:tabular-nums; color:#BFE3F2}
+.ghost{width:min(60vw, 200px); height:auto; filter:drop-shadow(0 0 18px rgba(191,227,242,.65)); animation:hover 3s ease-in-out infinite}
+@keyframes hover{0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)}}
 
 /* Footer */
 footer{display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap; margin-top:1.4rem; font-size:.9rem; color:var(--muted)}
@@ -189,6 +198,7 @@ footer{display:flex; justify-content:space-between; align-items:center; gap:1rem
 @media (prefers-reduced-motion: reduce){
   *,*::before,*::after{animation:none!important; transition:none!important}
   .petal{display:none}
+  body.haunted .wrap{filter:blur(18px) grayscale(.7)}
 }
 </style>
 </head>
@@ -217,6 +227,7 @@ footer{display:flex; justify-content:space-between; align-items:center; gap:1rem
 </div>
 <div id="live" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 <div id="hold"></div>
+<div id="haunt"></div>
 
 <script>
 /* =====================================================================
@@ -231,6 +242,7 @@ const CONFIG = {
   mercyMinutes: 20,                    // After this many minutes, wrong answers stop restarting the room
   mercyLockSeconds: 5,                 // Lockout length once the mercy rule is on
   copyBlockSeconds: 10,                // Wait after a copy, paste, right-click or drag attempt
+  screenshotBlockSeconds: 10,          // How long the Ghost blurs the page after a screenshot shortcut
   leftoverMinutes: 3,                  // How often the leftovers clock gets colder
   footerText: "Mr. Scott, English 12, Thanksgiving week",
   finalSteps: [                        // Numbered steps on the final screen, in order
@@ -260,24 +272,24 @@ const ROOMS = [
         prompt:"The play opens at midnight with nervous guards on a cold, dark castle wall. What mood does this opening create?",
         options:[
           "Tense and uneasy, like something is wrong in Denmark.",
-          "Cheerful and festive, like a royal celebration.",
+          "Cheerful and festive, like the start of a royal party.",
           "Calm and peaceful, like a quiet night at home.",
-          "Silly and lighthearted, like the start of a comedy."
+          "Silly and lighthearted, like the opening of a comedy."
         ]},
       { type:"single", tag:"Act 1",
         prompt:"Even before he sees the Ghost, why is Hamlet so upset?",
         options:[
-          "His father died, and his mother married his uncle about a month later.",
-          "Claudius has banished him from Denmark for good.",
-          "He lost a sword fight to Laertes in front of the whole court.",
-          "Horatio told the King all of Hamlet’s secrets."
+          "His father died, and a month later his mother married his uncle.",
+          "Claudius has banished him from Denmark and taken his title.",
+          "He lost a sword fight to Laertes in front of the whole royal court.",
+          "Horatio told the King every secret Hamlet trusted him with."
         ]},
       { type:"multi", tag:"Act 1",
         prompt:"What does the Ghost tell Hamlet?",
         options:[
-          "Claudius killed him by pouring poison in his ear while he slept.",
-          "Hamlet should get revenge, but leave his mother’s punishment to heaven.",
-          "Gertrude helped Claudius plan the murder.",
+          "Claudius poured poison in his ear while he slept.",
+          "Hamlet should get revenge, but leave his mother to heaven.",
+          "Gertrude knew about the murder and helped Claudius plan it.",
           "Hamlet should save him a plate of the wedding leftovers."
         ]}
     ]
@@ -291,10 +303,10 @@ const ROOMS = [
       { type:"single", tag:"Skill: Character",
         prompt:"An actor cries real tears while performing a sad speech about a queen from an old story. Why does this make Hamlet angry at himself?",
         options:[
-          "The actor shows more emotion over a story than Hamlet has shown about his own father’s murder.",
-          "Hamlet thinks the actor is secretly making fun of his mother.",
-          "Hamlet wanted to perform the speech himself and was not asked.",
-          "The speech reminds Hamlet that Ophelia turned him down."
+          "The actor feels more for a story than Hamlet does for his father.",
+          "Hamlet thinks the actor is secretly making fun of his mother, the Queen.",
+          "Hamlet wanted to perform the speech himself and was never asked.",
+          "The speech reminds Hamlet that Ophelia turned down his letters."
         ]},
       { type:"single", tag:"Act 2",
         prompt:"Polonius tells the King and Queen he has figured out why Hamlet is acting strange. What is his theory?",
@@ -307,9 +319,9 @@ const ROOMS = [
       { type:"multi", tag:"Act 2",
         prompt:"Which of these happen in Act 2?",
         options:[
-          "Rosencrantz and Guildenstern admit that the King and Queen sent for them.",
-          "Hamlet asks the actors to perform a murder play, with some lines he will add.",
-          "Hamlet stabs Polonius through a curtain.",
+          "Rosencrantz and Guildenstern admit the King and Queen sent for them.",
+          "Hamlet asks the actors to perform a murder play with lines he adds.",
+          "Hamlet stabs Polonius when he hears him hiding behind a curtain.",
           "The actors cancel the show because they want to go home for Thanksgiving."
         ]}
     ]
@@ -323,25 +335,25 @@ const ROOMS = [
       { type:"single", tag:"Skill: Dramatic irony",
         prompt:"Hamlet finds Claudius kneeling to pray and decides not to kill him yet. What does the audience know that Hamlet doesn’t?",
         options:[
-          "Claudius can’t really pray. He knows his words aren’t reaching heaven.",
-          "Polonius is hiding nearby, ready to warn the King.",
-          "Claudius has already confessed everything to Gertrude.",
-          "The Ghost has changed its mind about revenge."
+          "Claudius can’t really pray, and he knows it isn’t working.",
+          "Polonius is hiding nearby, ready to run and warn the King.",
+          "Claudius has already confessed the whole murder to Gertrude.",
+          "The Ghost has changed its mind and no longer wants revenge."
         ]},
       { type:"single", tag:"Act 3",
         prompt:"Why does Hamlet kill Polonius?",
         options:[
-          "He hears someone hiding behind the curtain in his mother’s room and thinks it might be the King.",
+          "He hears someone behind a curtain and thinks it’s the King.",
           "Polonius tells the King about Hamlet’s plan to use the actors.",
-          "Polonius attacks Hamlet with a sword first.",
-          "The Ghost tells Hamlet to do it."
+          "Polonius jumps out and attacks Hamlet with a sword first.",
+          "The Ghost appears and orders Hamlet to kill Polonius."
         ]},
       { type:"multi", tag:"Act 3",
         prompt:"Which of these happen in Act 3?",
         options:[
-          "Hamlet harshly rejects Ophelia while her father and the King secretly watch.",
+          "Hamlet rejects Ophelia while her father and the King secretly watch.",
           "The Ghost appears in Gertrude’s room, but only Hamlet can see it.",
-          "Laertes breaks into the castle with an angry crowd behind him.",
+          "Laertes breaks into the castle with an angry crowd behind him, demanding answers.",
           "Claudius stops the play to ask for a second slice of pie."
         ]}
     ]
@@ -355,10 +367,10 @@ const ROOMS = [
       { type:"single", tag:"Skill: Foil",
         prompt:"Laertes and Hamlet have both lost a father. How does Laertes act as a foil to Hamlet in Act 4?",
         options:[
-          "Laertes rushes into action right away, while Hamlet has put off revenge for months.",
-          "Laertes forgives his father’s killer, while Hamlet holds a grudge.",
+          "Laertes acts on revenge right away, while Hamlet has delayed for months.",
+          "Laertes forgives his father’s killer, while Hamlet keeps holding a grudge.",
           "Laertes refuses to listen to Claudius, while Hamlet trusts him completely.",
-          "Laertes cares less about his family’s honor than Hamlet does."
+          "Laertes cares much less about his family’s honor than Hamlet does."
         ]},
       { type:"single", tag:"Act 4",
         prompt:"Claudius sends a sealed letter to England along with Hamlet. What does it say?",
@@ -374,7 +386,7 @@ const ROOMS = [
           "Pirates attack Hamlet’s ship, and he ends up back in Denmark.",
           "Ophelia hands out flowers and sings sad songs.",
           "Hamlet and Laertes finally fight their fencing match.",
-          "Horatio hosts Friendsgiving, and Claudius brings the drinks."
+          "Horatio hosts Friendsgiving at the castle, and Claudius brings the drinks."
         ]}
     ]
   }
@@ -420,7 +432,7 @@ const STEPS = [
    STATE
    ===================================================================== */
 const FRESH = { step:0, q:0, startedAt:null, endedAt:null, lockUntil:0, lockRestart:true, lockLine:0,
-                attempts:0, vote:null, turkey:false, stareUntil:0, caught:false, copyUntil:0 };
+                attempts:0, vote:null, turkey:false, stareUntil:0, caught:false, copyUntil:0, shotUntil:0 };
 let state = load();
 let busy = false;
 let order = null, orderKey = "";
@@ -739,6 +751,8 @@ function faceSvg(guilty, i){
     return `<svg viewBox="0 0 48 48" aria-hidden="true">
       <circle cx="24" cy="26" r="17" fill="#D9DFC9" stroke="#1D1A24" stroke-width="1.5"/>
       <path d="M8 20 Q24 4 40 20 Q34 12 24 12 Q14 12 8 20Z" fill="#3B2A1E"/>
+      <path d="M13 15 L13 4 L18.5 9 L24 2 L29.5 9 L35 4 L35 15 Z" fill="#E2B33C" stroke="#7A5A10" stroke-width="1.3" stroke-linejoin="round"/>
+      <circle cx="24" cy="11" r="1.6" fill="#9B2335"/><circle cx="17.5" cy="12" r="1.1" fill="#274C77"/><circle cx="30.5" cy="12" r="1.1" fill="#274C77"/>
       <path d="M14 20 l7 3 M34 20 l-7 3" stroke="#1D1A24" stroke-width="2" stroke-linecap="round"/>
       <circle cx="18" cy="26" r="2.6" fill="#fff"/><circle cx="18" cy="26" r="1.3" fill="#1D1A24"/>
       <circle cx="30" cy="26" r="2.6" fill="#fff"/><circle cx="30" cy="26" r="1.3" fill="#1D1A24"/>
@@ -770,7 +784,7 @@ function mousetrapCard(c){
     rows += `<div class="row">`;
     for(let ci=0; ci<n; ci++){
       const guilty = (ri===AUDIENCE.guiltyRow && ci===AUDIENCE.guiltyCol);
-      const lab = `${guilty ? "Pale, frowning face" : "Smiling face"}, row ${ri+1}, seat ${ci+1}`;
+      const lab = `${guilty ? "Pale, frowning face wearing a crown" : "Smiling face"}, row ${ri+1}, seat ${ci+1}`;
       rows += `<button class="face" type="button" data-guilty="${guilty?1:0}" aria-label="${lab}" ${waiting||state.caught?"disabled":""}>${faceSvg(guilty, idx++)}</button>`;
     }
     rows += `</div>`;
@@ -887,7 +901,57 @@ function blockCopy(e){
   save(); renderHold();
   announce("Hold on. Copying and pasting is switched off.");
 }
+/* ---------- Screenshot guard ----------
+   A web page cannot truly block screenshots. This catches the keyboard shortcuts the
+   browser can see (Print Screen, Windows+Shift, Cmd+Shift on a Mac, Ctrl+Show windows on
+   a Chromebook), blurs the page, and sends in the Ghost. It cannot catch phone photos or
+   screenshots of the Zoom share taken on another computer. */
+const GHOST_SVG = `<svg class="ghost" viewBox="0 0 160 190" aria-hidden="true">
+  <path d="M80 30 C42 30 26 60 26 96 L26 170 L40 156 L54 172 L68 156 L80 172 L92 156 L106 172 L120 156 L134 170 L134 96 C134 60 118 30 80 30Z" fill="#DCEFF7" fill-opacity=".88" stroke="#9CC9DC" stroke-width="2"/>
+  <path d="M50 34 L50 10 L62 22 L80 4 L98 22 L110 10 L110 34 Z" fill="#E2B33C" stroke="#7A5A10" stroke-width="2" stroke-linejoin="round"/>
+  <circle cx="80" cy="20" r="3.4" fill="#9B2335"/><circle cx="62" cy="27" r="2.4" fill="#274C77"/><circle cx="98" cy="27" r="2.4" fill="#274C77"/>
+  <path d="M52 62 l22 8 M108 62 l-22 8" stroke="#1D2A36" stroke-width="3.5" stroke-linecap="round"/>
+  <ellipse cx="64" cy="80" rx="8" ry="10" fill="#1D2A36"/><ellipse cx="96" cy="80" rx="8" ry="10" fill="#1D2A36"/>
+  <circle cx="66" cy="77" r="2.4" fill="#fff"/><circle cx="98" cy="77" r="2.4" fill="#fff"/>
+  <path d="M52 98 C58 110 70 106 80 106 C90 106 102 110 108 98 C112 120 100 146 80 150 C60 146 48 120 52 98Z" fill="#AEB9C2" stroke="#8796A3" stroke-width="1.5"/>
+  <path d="M68 112 h24" stroke="#1D2A36" stroke-width="3" stroke-linecap="round"/>
+  <path d="M70 124 q2 10 0 18 M80 124 v22 M90 124 q-2 10 0 18" stroke="#8796A3" stroke-width="1.5" fill="none"/>
+</svg>`;
+const SHOT_LINES = ["The Ghost is watching.","Remember me. Not with a screenshot.","The Ghost saw that.","Nice try. The Ghost never sleeps."];
+let shotLine = 0;
+function haunt(){
+  const fresh = !(state.shotUntil > now());
+  state.shotUntil = now() + CONFIG.screenshotBlockSeconds*1000;
+  if(fresh) shotLine = Math.floor(Math.random()*SHOT_LINES.length);
+  document.body.classList.add("haunted");
+  try{ if(navigator.clipboard) navigator.clipboard.writeText("The Ghost is watching. Talk it over with your team instead.").catch(()=>{}); }catch(e){}
+  save(); renderHold();
+  if(fresh) announce("Screenshots are switched off. The Ghost is watching.");
+}
+function watchKeys(e){
+  const k = e.key || "";
+  const shot = k === "PrintScreen" || k === "Snapshot"
+    || (e.metaKey && e.shiftKey)                                   // Cmd+Shift (Mac), Windows+Shift+S
+    || (e.ctrlKey && (k === "F5" || k === "LaunchApplication1"))   // Ctrl+Show windows (Chromebook)
+    || (k === "Meta" && e.shiftKey) || (k === "Shift" && e.metaKey);
+  if(shot) haunt();
+}
+function renderHaunt(){
+  const box = $("haunt");
+  if(state.shotUntil > now()){
+    document.body.classList.add("haunted");
+    if(!box.innerHTML){
+      box.innerHTML = `<div class="haunt" role="alertdialog" aria-modal="true" aria-labelledby="hauntT">
+        <div class="haunt-box">${GHOST_SVG}
+        <h2 id="hauntT">${esc(SHOT_LINES[shotLine])}</h2>
+        <p>Screenshots are switched off in here. Talk it over with your team instead.</p>
+        <div class="count" id="hauntCount">${secsLeft(state.shotUntil)}</div></div></div>`;
+    }
+  } else { box.innerHTML = ""; document.body.classList.remove("haunted"); }
+}
+
 function renderHold(){
+  renderHaunt();
   const h = $("hold");
   if(state.copyUntil > now()){
     if(!h.innerHTML){
@@ -939,6 +1003,10 @@ function tick(){
     if(now() >= state.stareUntil){ state.stareUntil = 0; save(); render(true); return; }
     const el = $("stareCount"); if(el) el.textContent = secsLeft(state.stareUntil);
   }
+  if(state.shotUntil){
+    if(now() >= state.shotUntil){ state.shotUntil = 0; save(); renderHaunt(); }
+    else { const el = $("hauntCount"); if(el) el.textContent = secsLeft(state.shotUntil); }
+  }
   if(state.copyUntil){
     if(now() >= state.copyUntil){ state.copyUntil = 0; save(); renderHold(); }
     else { const el = $("holdCount"); if(el) el.textContent = secsLeft(state.copyUntil); }
@@ -966,6 +1034,8 @@ function onReset(){
 /* ---------- Boot ---------- */
 function boot(){
   ["copy","cut","paste","contextmenu","dragstart","drop"].forEach(ev=>document.addEventListener(ev, blockCopy));
+  document.addEventListener("keydown", watchKeys, true);
+  document.addEventListener("keyup", e=>{ if(e.key === "PrintScreen" || e.key === "Snapshot") haunt(); }, true);
   $("curtainBtn").addEventListener("click", hideBehindCurtain);
   $("resetBtn").addEventListener("click", onReset);
   render(false);
