@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>TEACHER GUIDE: Hamlet Escape Room (Acts 1–4)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IM+Fell+English&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1B2330;--muted:#4D5866;--paper:#E9ECEE;--card:#FAFBFB;--line:#C3CBD3;--ok:#24663A;--okt:#DDEFE2;--no:#6E7883;--warn:#A3243A;--warnt:#F7E1E4;
+--a1:#274C77;--t1:#DCE5EF;--a2:#6A3E66;--t2:#EDE2EC;--a3:#9B2335;--t3:#F4DFE2;--a4:#2B6461;--t4:#DBEBE9;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--ink:#E8ECEF;--muted:#AEB8C3;--paper:#12161C;--card:#1A2028;--line:#38424E;--ok:#8FD3A4;--okt:#16291D;--no:#8D97A2;--warn:#FF8C9B;--warnt:#3A1A21;
+--a1:#8EB6E3;--t1:#17222F;--a2:#D7A6D1;--t2:#2A1D2A;--a3:#FF8C9B;--t3:#30191E;--a4:#86CFC8;--t4:#14282A;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.55 "Atkinson Hyperlegible",system-ui,sans-serif}
+.wrap{max-width:52rem;margin:0 auto;padding:1.2rem 1rem 3rem}
+h1,h2,h3{font-family:"IM Fell English",Georgia,serif;font-weight:400;line-height:1.1}
+h1{font-size:2.5rem;margin:.3rem 0 .3rem} h2{font-size:1.9rem;margin:0 0 .3rem} h3{font-size:1.4rem;margin:1.2rem 0 .4rem}
+.banner{display:inline-block;background:var(--warn);color:#fff;font-weight:700;font-size:.85rem;padding:.25rem .75rem;border-radius:999px}
+.lede{color:var(--muted);margin:.2rem 0 1rem}
+nav{display:flex;flex-wrap:wrap;gap:.4rem;margin:.6rem 0 1.4rem}
+nav a{color:var(--ink);border:1.5px solid var(--line);border-radius:999px;padding:.3rem .8rem;text-decoration:none;font-weight:700;font-size:.9rem}
+nav a:hover{border-color:var(--ink)}
+section{background:var(--card);border:2px solid var(--ink);border-radius:14px;padding:1.2rem 1.3rem;margin:1rem 0}
+table{width:100%;border-collapse:collapse;font-size:.98rem}
+th,td{text-align:left;padding:.5rem .55rem;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.85rem;color:var(--muted)}
+.ans{font-size:1.1rem;color:var(--ok);background:var(--okt);padding:.05rem .45rem;border-radius:6px}
+.tbl{overflow-x:auto}
+.room .num{font-size:.95rem;font-family:"Atkinson Hyperlegible",sans-serif;font-weight:700;vertical-align:middle;margin-right:.4rem}
+.r1{background:var(--t1)} .r1 .num,.r1 .qtag{color:var(--a1)}
+.r2{background:var(--t2)} .r2 .num,.r2 .qtag{color:var(--a2)}
+.r3{background:var(--t3)} .r3 .num,.r3 .qtag{color:var(--a3)}
+.r4{background:var(--t4)} .r4 .num,.r4 .qtag{color:var(--a4)}
+.meta{color:var(--muted);margin:0 0 .6rem;font-size:.95rem}
+.q{background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:.8rem 1rem;margin:.7rem 0}
+.qtag{margin:0;font-size:.85rem;font-weight:700}
+.qp{font-weight:700;font-size:1.1rem;line-height:1.35;margin:.25rem 0 .5rem}
+.opts{list-style:none;margin:0;padding:0;display:grid;gap:.25rem}
+.opts li{display:flex;gap:.6rem;align-items:baseline;padding:.25rem .5rem;border-radius:6px}
+.opts li.ok{background:var(--okt);color:var(--ok);font-weight:700}
+.opts li.no{color:var(--no)}
+.mk{flex:none;width:1.1em;font-weight:700}
+.check{margin:.55rem 0 0;font-size:.95rem;color:var(--muted)} .check b{color:var(--ink)}
+.aud{display:inline-block;padding:.7rem;border-radius:12px;background:#1D1A24;margin:.4rem 0}
+.ar{display:flex;justify-content:center;gap:4px;margin-top:4px}
+.ar span{width:26px;height:26px;border-radius:50%;background:#D9A27C;display:grid;place-items:center;font-size:.85rem}
+.ar span.g{background:#D9DFC9;outline:3px solid #C99A2E;color:#1D1A24}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media (max-width:620px){.two{grid-template-columns:1fr}h1{font-size:2rem}}
+.callout{border:1.5px solid var(--warn);background:var(--warnt);padding:.7rem .9rem;border-radius:8px;margin:.6rem 0}
+ul.tight{margin:.3rem 0;padding-left:1.2rem} ul.tight li{margin:.25rem 0}
+.box{list-style:none;padding:0} .box li{padding-left:1.7rem;text-indent:-1.7rem;margin:.35rem 0} .box li::before{content:"☐ ";font-size:1.1rem}
+code{font-size:.9em}
+@media print{body{background:#fff}section{break-inside:avoid-page;border-width:1px}nav{display:none}}
+</style></head>
+<body><div class="wrap">
+<span class="banner">Teacher only. Do not share this link.</span>
+<h1>Hamlet Escape Room: Teacher Guide</h1>
+<p class="lede">Acts 1–4 review. Every answer, lock and surprise in one place, so you can check the room without playing it.</p>
+<nav aria-label="Sections"><a href="#glance">At a glance</a><a href="#main">From the main room</a><a href="#key">Answer key</a><a href="#vote">Madness vote</a><a href="#fun">Surprises</a><a href="#before">Before class</a></nav>
+
+<section id="glance"><h2>At a glance</h2>
+<div class="tbl"><table><thead><tr><th>Step</th><th>What teams do</th><th>Answer</th></tr></thead><tbody>
+<tr><td><b>Intro</b></td><td>Rules, then <b>Start the clock</b></td><td>—</td></tr>
+<tr><td><b>Room 1: The Castle Wall</b></td><td>3 questions, Act 1</td><td>Key below</td></tr>
+<tr><td><b>Madness vote</b></td><td>Team picks “An act” or “Really losing it”</td><td>No wrong answer</td></tr>
+<tr><td><b>Lock 1: Swear on It</b></td><td>A teammate visits you for the code</td><td><b class="ans">412</b></td></tr>
+<tr><td><b>Room 2: The Hallway</b></td><td>3 questions, Act 2</td><td>Key below</td></tr>
+<tr><td><b>Lock 2: The Mousetrap</b></td><td>Click the one face that isn’t enjoying the play</td><td>Row 2, 5th from the left</td></tr>
+<tr><td><b>Room 3: The Queen’s Room</b></td><td>3 questions, Act 3</td><td>Key below</td></tr>
+<tr><td><b>Lock 3: Three Sons</b></td><td>Type a one-word answer</td><td><b class="ans">revenge</b></td></tr>
+<tr><td><b>Room 4: The Throne Room</b></td><td>3 questions, Act 4</td><td>Key below</td></tr>
+<tr><td><b>Final</b></td><td>Password for Pear Deck</td><td><b class="ans">GREAT DANE</b></td></tr>
+</tbody></table></div>
+<h3>Timing rules</h3>
+<ul class="tight">
+<li>Wrong answer: the room locks for <b>15 s</b>, then restarts at question 1.</li>
+<li>After <b>20 min</b> (mercy rule): a wrong answer locks for <b>5 s</b> and the team stays on the same question.</li>
+<li>Wrong face in Lock 2: <b>10 s</b> wait. Copy, paste or right-click: <b>10 s</b> “Hold on” screen.</li>
+<li>Locks never reset a room. Wrong codes and riddle guesses have no penalty.</li>
+<li>“Pick two” questions need exactly the two ✓ options. Once two boxes are checked, the others grey out until one is unchecked.</li>
+</ul></section>
+
+<section id="main"><h2>What teams will ask you for</h2>
+<div class="two">
+<div><h3>Lock 1: the Ghost’s code</h3><p>Give the visiting teammate <b class="ans">412</b>. You are the Ghost; a spooky voice is encouraged.</p></div>
+<div><h3>Lock 2: stuck on the audience</h3><p>The guilty face (★) never moves. It is the only face that is pale, frowning and sweating.</p><div class="aud" aria-label="Lock 2 audience map"><div class="ar"><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span></div><div class="ar"><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class="g">★</span><span class=""></span><span class=""></span></div><div class="ar"><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span></div><div class="ar"><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span></div></div>
+<ul class="tight"><li>Hint 1: “Look for the one face that isn’t smiling.”</li><li>Hint 2: “The King goes pale. Find the palest face.”</li><li>Hint 3: “Second row, fifth seat from the left.”</li></ul></div>
+</div>
+<h3>Lock 3: the riddle</h3>
+<p>Answer: <b class="ans">revenge</b> (<b>vengeance</b> also works). Any typed answer containing the word counts (“revenge!”, “getting revenge”).</p>
+<ul class="tight">
+<li>Clue 1: “What did Hamlet promise the Ghost in Act 1?”</li>
+<li>Clue 2: “Laertes wants it for the same reason Hamlet does.”</li>
+<li>Clue 3: “It starts with R.”</li>
+</ul>
+<h3>General clue for any question</h3><p>Every answer comes from the act named on the room. Point teams to the “Check it” note in the key below.</p>
+</section>
+
+<section id="key"><h2>Answer key</h2>
+<p class="meta">Options appear here in data order. On screen they are shuffled. ✓ = correct, ✗ = wrong. Each room has one joke option, always wrong.</p>
+</section>
+<section class="room r1"><h2><span class="num">Room 1</span> The Castle Wall</h2><p class="meta">Act 1: A ghost with a message</p><div class="q"><p class="qtag">Q1 · Skill: Mood</p><p class="qp">The play opens at midnight with nervous guards on a cold, dark castle wall. What mood does this opening create?</p><ul class="opts"><li class="ok"><span class="mk">✓</span><span>Tense and uneasy, like something is wrong in Denmark.</span></li><li class="no"><span class="mk">✗</span><span>Cheerful and festive, like a royal celebration.</span></li><li class="no"><span class="mk">✗</span><span>Calm and peaceful, like a quiet night at home.</span></li><li class="no"><span class="mk">✗</span><span>Silly and lighthearted, like the start of a comedy.</span></li></ul><p class="check"><b>Check it:</b> 1.1: It is just past midnight, bitterly cold, and the guards are jumpy because they have seen the Ghost twice before.</p></div><div class="q"><p class="qtag">Q2 · Act 1</p><p class="qp">Even before he sees the Ghost, why is Hamlet so upset?</p><ul class="opts"><li class="ok"><span class="mk">✓</span><span>His father died, and his mother married his uncle about a month later.</span></li><li class="no"><span class="mk">✗</span><span>Claudius has banished him from Denmark for good.</span></li><li class="no"><span class="mk">✗</span><span>He lost a sword fight to Laertes in front of the whole court.</span></li><li class="no"><span class="mk">✗</span><span>Horatio told the King all of Hamlet’s secrets.</span></li></ul><p class="check"><b>Check it:</b> 1.2, Hamlet’s first soliloquy: his mother remarried “within a month” of his father’s funeral, to his father’s brother.</p></div><div class="q"><p class="qtag">Q3 · Act 1 · pick two</p><p class="qp">What does the Ghost tell Hamlet?</p><ul class="opts"><li class="ok"><span class="mk">✓</span><span>Claudius killed him by pouring poison in his ear while he slept.</span></li><li class="ok"><span class="mk">✓</span><span>Hamlet should get revenge, but leave his mother’s punishment to heaven.</span></li><li class="no"><span class="mk">✗</span><span>Gertrude helped Claudius plan the murder.</span></li><li class="no"><span class="mk">✗</span><span>Hamlet should save him a plate of the wedding leftovers.</span></li></ul><p class="check"><b>Check it:</b> 1.5: the Ghost says Claudius poured poison in his ear while he slept in the orchard, and tells Hamlet to leave his mother to heaven. He never says Gertrude helped plan the murder.</p></div></section><section class="room r2"><h2><span class="num">Room 2</span> The Hallway</h2><p class="meta">Act 2: Everyone is watching Hamlet</p><div class="q"><p class="qtag">Q1 · Skill: Character</p><p class="qp">An actor cries real tears while performing a sad speech about a queen from an old story. Why does this make Hamlet angry at himself?</p><ul class="opts"><li class="ok"><span class="mk">✓</span><span>The actor shows more emotion over a story than Hamlet has shown about his own father’s murder.</span></li><li class="no"><span class="mk">✗</span><span>Hamlet thinks the actor is secretly making fun of his mother.</span></li><li class="no"><span class="mk">✗</span><span>Hamlet wanted to perform the speech himself and was not asked.</span></li><li class="no"><span class="mk">✗</span><span>The speech reminds Hamlet that Ophelia turned him down.</span></li></ul><p class="check"><b>Check it:</b> End of 2.2, Hamlet’s soliloquy after the actor’s Hecuba speech: the actor weeps over a made-up story while Hamlet has done nothing about a real murder.</p></div><div class="q"><p class="qtag">Q2 · Act 2</p><p class="qp">Polonius tells the King and Queen he has figured out why Hamlet is acting strange. What is his theory?</p><ul class="opts"><li class="ok"><span class="mk">✓</span><span>Hamlet has gone mad because Ophelia rejected his love.</span></li><li class="no"><span class="mk">✗</span><span>Hamlet caught a fever on the trip home from school.</span></li><li class="no"><span class="mk">✗</span><span>Hamlet is upset that Polonius gave him bad advice.</span></li><li class="no"><span class="mk">✗</span><span>Hamlet is secretly planning to run away with the actors.</span></li></ul><p class="check"><b>Check it:</b> 2.1–2.2: Polonius believes Hamlet went mad after Ophelia, on her father’s orders, refused his letters and his visits.</p></div><div class="q"><p class="qtag">Q3 · Act 2 · pick two</p><p class="qp">Which of these happen in Act 2?</p><ul class="opts"><li class="ok"><span class="mk">✓</span><span>Rosencrantz and Guildenstern admit that the King and Queen sent for them.</span></li><li class="ok"><span class="mk">✓</span><span>Hamlet asks the actors to perform a murder play, with some lines he will add.</span></li><li class="no"><span class="mk">✗</span><span>Hamlet stabs Polonius through a curtain.</span></li><li class="no"><span class="mk">✗</span><span>The actors cancel the show because they want to go home for Thanksgiving.</span></li></ul><p class="check"><b>Check it:</b> 2.2: Guildenstern admits “we were sent for,” and Hamlet asks the actors for The Murder of Gonzago with a short speech he will write. Polonius is stabbed in 3.4.</p></div></section><section class="room r3"><h2><span class="num">Room 3</span> The Queen’s Room</h2><p class="meta">Act 3: The trap is sprung</p><div class="q"><p class="qtag">Q1 · Skill: Dramatic irony</p><p class="qp">Hamlet finds Claudius kneeling to pray and decides not to kill him yet. What does the audience know that Hamlet doesn’t?</p><ul class="opts"><li class="ok"><span class="mk">✓</span><span>Claudius can’t really pray. He knows his words aren’t reaching heaven.</span></li><li class="no"><span class="mk">✗</span><span>Polonius is hiding nearby, ready to warn the King.</span></li><li class="no"><span class="mk">✗</span><span>Claudius has already confessed everything to Gertrude.</span></li><li class="no"><span class="mk">✗</span><span>The Ghost has changed its mind about revenge.</span></li></ul><p class="check"><b>Check it:</b> 3.3: before Hamlet enters, Claudius says he cannot pray; after Hamlet leaves, he admits his words fly up but his thoughts stay below.</p></div><div class="q"><p class="qtag">Q2 · Act 3</p><p class="qp">Why does Hamlet kill Polonius?</p><ul class="opts"><li class="ok"><span class="mk">✓</span><span>He hears someone hiding behind the curtain in his mother’s room and thinks it might be the King.</span></li><li class="no"><span class="mk">✗</span><span>Polonius tells the King about Hamlet’s plan to use the actors.</span></li><li class="no"><span class="mk">✗</span><span>Polonius attacks Hamlet with a sword first.</span></li><li class="no"><span class="mk">✗</span><span>The Ghost tells Hamlet to do it.</span></li></ul><p class="check"><b>Check it:</b> 3.4: Hamlet hears a voice behind the curtain, stabs through it, and asks, “Is it the King?”</p></div><div class="q"><p class="qtag">Q3 · Act 3 · pick two</p><p class="qp">Which of these happen in Act 3?</p><ul class="opts"><li class="ok"><span class="mk">✓</span><span>Hamlet harshly rejects Ophelia while her father and the King secretly watch.</span></li><li class="ok"><span class="mk">✓</span><span>The Ghost appears in Gertrude’s room, but only Hamlet can see it.</span></li><li class="no"><span class="mk">✗</span><span>Laertes breaks into the castle with an angry crowd behind him.</span></li><li class="no"><span class="mk">✗</span><span>Claudius stops the play to ask for a second slice of pie.</span></li></ul><p class="check"><b>Check it:</b> 3.1 is the scene with Ophelia while Polonius and Claudius hide; in 3.4 the Ghost returns and Gertrude sees nothing. Laertes and the mob arrive in 4.5.</p></div></section><section class="room r4"><h2><span class="num">Room 4</span> The Throne Room</h2><p class="meta">Act 4: Grief and revenge</p><div class="q"><p class="qtag">Q1 · Skill: Foil</p><p class="qp">Laertes and Hamlet have both lost a father. How does Laertes act as a foil to Hamlet in Act 4?</p><ul class="opts"><li class="ok"><span class="mk">✓</span><span>Laertes rushes into action right away, while Hamlet has put off revenge for months.</span></li><li class="no"><span class="mk">✗</span><span>Laertes forgives his father’s killer, while Hamlet holds a grudge.</span></li><li class="no"><span class="mk">✗</span><span>Laertes refuses to listen to Claudius, while Hamlet trusts him completely.</span></li><li class="no"><span class="mk">✗</span><span>Laertes cares less about his family’s honor than Hamlet does.</span></li></ul><p class="check"><b>Check it:</b> 4.5 and 4.7: Laertes storms the castle the moment he hears; Hamlet calls his own revenge “dull” in 4.4.</p></div><div class="q"><p class="qtag">Q2 · Act 4</p><p class="qp">Claudius sends a sealed letter to England along with Hamlet. What does it say?</p><ul class="opts"><li class="ok"><span class="mk">✓</span><span>Put Hamlet to death as soon as he arrives.</span></li><li class="no"><span class="mk">✗</span><span>Crown Hamlet as a prince of England.</span></li><li class="no"><span class="mk">✗</span><span>Send soldiers to help Denmark fight Norway.</span></li><li class="no"><span class="mk">✗</span><span>Keep Hamlet safe until the Queen calms down.</span></li></ul><p class="check"><b>Check it:</b> End of 4.3: Claudius’s letter orders England to carry out “the present death of Hamlet.”</p></div><div class="q"><p class="qtag">Q3 · Act 4 · pick two</p><p class="qp">Which of these happen in Act 4?</p><ul class="opts"><li class="ok"><span class="mk">✓</span><span>Pirates attack Hamlet’s ship, and he ends up back in Denmark.</span></li><li class="ok"><span class="mk">✓</span><span>Ophelia hands out flowers and sings sad songs.</span></li><li class="no"><span class="mk">✗</span><span>Hamlet and Laertes finally fight their fencing match.</span></li><li class="no"><span class="mk">✗</span><span>Horatio hosts Friendsgiving, and Claudius brings the drinks.</span></li></ul><p class="check"><b>Check it:</b> 4.6: Hamlet’s letter to Horatio tells of the pirates; 4.5: Ophelia’s flowers and songs. The fencing match is only planned in 4.7; it happens in Act 5.</p></div></section>
+
+<section id="vote"><h2>The madness vote</h2>
+<p>Shown after Room 1, before Lock 1. No wrong answer, and the team’s choice comes back on the final screen. Use it as the main-room debrief.</p>
+<div class="two">
+<div><h3>“An act”</h3><ul class="tight"><li>At the end of Act 1, Hamlet tells Horatio and Marcellus he may pretend to be strange.</li><li>He tells Rosencrantz and Guildenstern he is only mad some of the time (2.2), and Polonius notices there is a method to it.</li><li>In 3.4 he tells his mother he is not really mad, only pretending.</li></ul></div>
+<div><h3>“Really losing it”</h3><ul class="tight"><li>He stabs through a curtain without knowing who is there (3.4).</li><li>He sees and speaks to the Ghost while Gertrude sees nothing (3.4).</li><li>His treatment of Ophelia in 3.1 swings wildly, and he says himself he has lost all his joy (2.2).</li></ul></div>
+</div>
+</section>
+
+<section id="fun"><h2>Surprises (none affect scoring)</h2>
+<ul class="tight">
+<li><b>Hidden turkey:</b> bottom-right corner of the Room 1 picture panel (also during the madness vote). Clicking it adds a “Turkey found” badge to the final screen.</li>
+<li><b>The curtain:</b> curtain icon in the header. It fades the question for 3 seconds with a Polonius joke and helps no one.</li>
+<li><b>Leftovers clock:</b> a nod to Hamlet’s joke in 1.2 that the funeral food was served cold at the wedding. Changes every 3 min: Still warm → Lukewarm → Room temp → Wedding buffet → Getting cold → Cold → Very cold → Science project. The final screen reads “You escaped while the leftovers were …”.</li>
+<li><b>Lockout lines:</b> “The Ghost is disappointed. Again.” · “Polonius has a theory about that answer. Please don’t ask him.” · “Rosencrantz and Guildenstern are reporting this to the King.” · “Something moved behind the curtain. Wait.” · “The leftovers are getting colder.” · “Horatio is writing this down.”</li>
+<li><b>One joke option per room</b> (always wrong): the wedding leftovers, actors going home for Thanksgiving, Claudius wanting more pie, and Horatio’s Friendsgiving.</li>
+</ul></section>
+
+<section id="before"><h2>Before class</h2>
+<ul class="box">
+<li>Settings are in <code>CONFIG</code> at the top of the escape room’s script. Code: <b>412</b>. Password: <b>GREAT DANE</b>. Match the password to the Pear Deck slide.</li>
+<li>Upload <code>index.html</code> to a new GitHub Pages repo and put the link in the LSW slide notes (Escape room: directions).</li>
+<li>Play once start to finish; about 10 minutes solo is roughly 20 for a team.</li>
+<li>Find the guilty face over a Zoom screen share.</li>
+<li>Refresh mid-room and during a lockout to confirm it resumes.</li>
+<li>Open it on a phone and in dark mode.</li>
+<li>Click <b>Reset progress</b> twice before sharing the link.</li>
+</ul>
+<p class="meta">Final-screen steps students see: 1. Every teammate: type the password into the Pear Deck slide. 2. Stay in your breakout room. Mr. Scott will bring everyone back. 3. Be ready to defend your team’s vote on Hamlet’s madness.</p>
+</section>
+</div></body></html>

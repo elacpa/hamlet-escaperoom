@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hamlet Escape Room (Acts 1–4)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+/* ---------- Tokens ---------- */
+:root{
+  color-scheme: light;
+  --ink:#1B2330; --muted:#4D5866; --paper:#E9ECEE; --card:#FAFBFB; --line:#C3CBD3;
+  --danger:#A3243A; --danger-tint:#F7E1E4; --ok:#24663A; --ok-tint:#DDEFE2;
+  --gold:#C99A2E; --stage:#1D1A24;
+  --accent:#1B2330; --tint:#DCE1E6; --on-accent:#FAFBFB;
+  --display:"IM Fell English", Georgia, "Times New Roman", serif;
+  --body:"Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --shadow:0 1px 0 rgba(27,35,48,.08), 0 8px 20px -12px rgba(27,35,48,.45);
+}
+body[data-room="1"]{--accent:#274C77; --tint:#DCE5EF}
+body[data-room="2"]{--accent:#6A3E66; --tint:#EDE2EC}
+body[data-room="3"]{--accent:#9B2335; --tint:#F4DFE2}
+body[data-room="4"]{--accent:#2B6461; --tint:#DBEBE9}
+@media (prefers-color-scheme: dark){
+  :root{
+    color-scheme: dark;
+    --ink:#E8ECEF; --muted:#AEB8C3; --paper:#12161C; --card:#1A2028; --line:#38424E;
+    --danger:#FF8C9B; --danger-tint:#3A1A21; --ok:#8FD3A4; --ok-tint:#16291D;
+    --accent:#C9D2DC; --tint:#222A33; --on-accent:#12161C;
+    --shadow:0 1px 0 rgba(0,0,0,.4), 0 10px 22px -12px rgba(0,0,0,.8);
+  }
+  body[data-room="1"]{--accent:#8EB6E3; --tint:#17222F}
+  body[data-room="2"]{--accent:#D7A6D1; --tint:#2A1D2A}
+  body[data-room="3"]{--accent:#FF8C9B; --tint:#30191E}
+  body[data-room="4"]{--accent:#86CFC8; --tint:#14282A}
+}
+
+/* ---------- Base ---------- */
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:var(--body); font-size:17px; line-height:1.55;
+  -webkit-user-select:none; user-select:none; min-height:100vh;
+}
+input{-webkit-user-select:text; user-select:text}
+.wrap{max-width:52rem; margin:0 auto; padding:1rem 1rem 2rem}
+.sr-only{position:absolute!important; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+:focus-visible{outline:3px solid var(--accent); outline-offset:3px; border-radius:6px}
+button{font:inherit; color:inherit}
+
+/* ---------- Header strip ---------- */
+.strip{
+  display:flex; flex-wrap:wrap; align-items:center; gap:.6rem 1rem;
+  padding:.7rem .9rem; border:2px solid var(--ink); border-radius:12px; background:var(--card); box-shadow:var(--shadow);
+}
+.title{font-family:var(--display); font-size:1.45rem; line-height:1.1; margin:0; flex:1 1 auto}
+.pills{display:flex; gap:.35rem; list-style:none; margin:0; padding:0; flex-wrap:wrap}
+.pill{font-size:.85rem; font-weight:700; padding:.25rem .65rem; border-radius:999px; border:1.5px solid var(--line); color:var(--muted); white-space:nowrap}
+.pill.done{background:var(--ink); border-color:var(--ink); color:var(--paper)}
+.pill.done::before{content:"✓ "}
+.pill.current{border-color:var(--accent); color:var(--accent); background:var(--tint)}
+.clockbox{display:flex; align-items:center; gap:.6rem}
+.clock{font-weight:700; font-size:1.4rem; font-variant-numeric:tabular-nums}
+.meal{font-size:.78rem; color:var(--muted); line-height:1.15; text-align:right}
+.meal b{display:block; color:var(--ink); font-size:.85rem}
+.curtain{width:44px; height:44px; border-radius:10px; border:1.5px solid var(--line); background:transparent; cursor:pointer; display:grid; place-items:center; padding:0}
+.curtain:hover{border-color:var(--accent)}
+.curtain svg{width:26px; height:26px}
+
+/* ---------- Plate ---------- */
+.plate{
+  position:relative; margin-top:1rem; padding:1.2rem 1.3rem 1.1rem; border-radius:14px;
+  background:var(--tint); border:1.5px solid color-mix(in srgb, var(--accent) 35%, transparent); overflow:hidden;
+}
+.plate-label{font-size:.9rem; font-weight:700; color:var(--accent); margin:0 0 .2rem}
+.plate-name{font-family:var(--display); font-weight:400; font-size:clamp(2.1rem, 6.5vw, 3.1rem); line-height:1; margin:0 0 .55rem}
+.plate-lines{margin:0 0 .6rem; max-width:38rem}
+.plate-epi{font-style:italic; color:var(--muted); margin:0; padding-top:.45rem; border-top:1px solid color-mix(in srgb, var(--accent) 30%, transparent); max-width:38rem}
+.plate-art{display:block; margin:.7rem 0 0; width:100%; max-width:22rem; height:auto; color:var(--accent)}
+.turkey{position:absolute; right:.6rem; bottom:.5rem; width:44px; height:44px; border:0; background:transparent; padding:4px; cursor:pointer; opacity:.8; border-radius:8px}
+.turkey:hover{opacity:1}
+.turkey svg{width:100%; height:100%}
+
+/* ---------- Card ---------- */
+.card{
+  position:relative; margin-top:1rem; padding:1.3rem 1.3rem 1.4rem; border-radius:14px;
+  background:var(--card); border:2px solid var(--ink); box-shadow:var(--shadow); transition:opacity .4s ease;
+}
+.card.hidden-behind{opacity:.04}
+.card-top{display:flex; justify-content:space-between; align-items:center; gap:.8rem; margin-bottom:.6rem; flex-wrap:wrap}
+.tag{font-size:.9rem; font-weight:700; color:var(--accent)}
+.pips{display:flex; gap:.35rem}
+.pip{width:12px; height:12px; border-radius:50%; border:2px solid var(--accent)}
+.pip.on{background:var(--accent)}
+.prompt{font-weight:700; font-size:1.3rem; line-height:1.35; margin:0 0 .9rem}
+.prompt:focus{outline:none}
+h2.big{font-family:var(--display); font-weight:400; font-size:2rem; line-height:1.1; margin:0 0 .6rem}
+h2.big:focus{outline:none}
+fieldset{border:0; margin:0; padding:0; min-width:0}
+.hint{font-weight:700; color:var(--accent); margin:0 0 .6rem}
+.opts{display:grid; gap:.55rem}
+.opt{display:flex; align-items:center; gap:.75rem; min-height:52px; padding:.6rem .85rem; border:2px solid var(--line); border-radius:10px; cursor:pointer; background:var(--card)}
+.opt:hover{border-color:var(--accent)}
+.opt input{width:22px; height:22px; margin:0; flex:none; accent-color:var(--accent)}
+.opt:has(input:checked){border-color:var(--accent); background:var(--tint)}
+.opt:has(input:focus-visible){outline:3px solid var(--accent); outline-offset:2px}
+.opt.disabled{opacity:.6; cursor:default}
+.actions{display:flex; flex-wrap:wrap; gap:.7rem; align-items:center; margin-top:1rem}
+.btn{min-height:48px; padding:.6rem 1.3rem; border-radius:10px; border:2px solid var(--accent); background:var(--accent); color:var(--on-accent); font-weight:700; font-size:1.02rem; cursor:pointer}
+.btn:disabled{opacity:.45; cursor:not-allowed}
+.btn.ghost{background:transparent; color:var(--accent)}
+.feedback{min-height:1.6em; margin:.8rem 0 0; font-weight:700}
+.feedback.ok{color:var(--ok)}
+.feedback.bad{color:var(--danger)}
+.correct-flash{display:inline-block; padding:.3rem .9rem; border-radius:8px; background:var(--ok-tint); color:var(--ok); font-family:var(--display); font-size:1.6rem}
+.rules{margin:.4rem 0 0; padding-left:1.3rem}
+.rules li{margin:.35rem 0}
+.field{display:flex; flex-wrap:wrap; gap:.7rem; align-items:flex-end; margin-top:.6rem}
+.field label{display:block; font-weight:700; width:100%}
+.field input{font:inherit; font-size:1.5rem; font-weight:700; letter-spacing:.12em; padding:.45rem .8rem; min-height:52px; border:2px solid var(--ink); border-radius:10px; background:var(--paper); color:var(--ink); width:9rem}
+.field input.wide{width:min(100%, 18rem); letter-spacing:.03em}
+.riddle{font-size:1.15rem; line-height:1.55; margin:.2rem 0 .9rem; padding-left:1rem; border-left:4px solid var(--accent)}
+.riddle span{display:block}
+
+/* lockout */
+.lockout{text-align:center; padding:.6rem 0}
+.lockout .count{font-family:var(--display); font-size:clamp(4rem, 18vw, 7rem); line-height:1; color:var(--danger); font-variant-numeric:tabular-nums}
+.lockout .line{font-style:italic; font-size:1.2rem; margin:.4rem 0 .6rem}
+
+/* Madness vote */
+.votes{display:grid; grid-template-columns:1fr 1fr; gap:.8rem; margin-top:.8rem}
+.vote{min-height:88px; border-radius:12px; border:2px solid var(--accent); background:var(--tint); cursor:pointer; font-family:var(--display); font-size:1.7rem; color:var(--ink)}
+.vote:hover{background:var(--card)}
+.mask-inline{display:block; margin:0 auto .4rem; width:96px; height:54px; color:var(--accent)}
+
+/* Lock 2: the audience */
+.theater{position:relative; margin:.6rem auto 0; max-width:30rem; border-radius:14px; background:var(--stage); padding:.8rem .5rem 1rem; overflow:hidden; transition:filter .8s ease}
+.theater.dark{filter:brightness(.35)}
+.stage{display:block; width:100%; height:auto; margin:0 auto .6rem; max-width:20rem}
+.row{display:flex; justify-content:center; gap:5px; margin-top:4px}
+.face{width:min(13%, 56px); aspect-ratio:1; min-width:40px; min-height:40px; padding:0; border:0; border-radius:50%; background:transparent; cursor:pointer}
+.face svg{width:100%; height:100%; display:block}
+.face:disabled{cursor:not-allowed}
+.face:focus-visible{outline:3px solid var(--gold); outline-offset:1px}
+.face.shake{animation:shake .4s ease}
+@keyframes shake{20%,60%{transform:translateX(-4px)} 40%,80%{transform:translateX(4px)}}
+.wait{font-weight:700; color:var(--danger); text-align:center; margin:.8rem 0 0}
+
+/* Final */
+.password{font-family:var(--display); font-size:clamp(2.2rem, 9vw, 3.4rem); letter-spacing:.04em; line-height:1.1; text-align:center; padding:.8rem .6rem; margin:.6rem 0 1rem; border:3px double var(--accent); border-radius:12px; background:var(--tint); -webkit-user-select:text; user-select:text}
+.steps{padding-left:1.4rem; margin:.4rem 0 1rem}
+.steps li{margin:.35rem 0; font-size:1.05rem}
+.badges{display:flex; flex-wrap:wrap; gap:.5rem; margin-top:.4rem}
+.badge{font-size:.85rem; font-weight:700; padding:.3rem .75rem; border-radius:999px; background:var(--ink); color:var(--paper)}
+.echo{margin-top:1rem; padding:.8rem 1rem; border-radius:10px; background:var(--tint); border:1.5px solid var(--accent)}
+
+/* Overlays and notes */
+.note{margin-top:.8rem; padding:.7rem .9rem; border-radius:10px; background:var(--tint); border:1.5px dashed var(--accent); display:flex; gap:.8rem; align-items:center; justify-content:space-between; flex-wrap:wrap}
+.hideline{margin-top:.7rem; text-align:center; font-style:italic; font-size:1.15rem}
+.hold{position:fixed; inset:0; z-index:50; display:grid; place-items:center; padding:1rem; background:color-mix(in srgb, var(--paper) 88%, transparent)}
+.hold-box{max-width:28rem; text-align:center; padding:1.6rem; border-radius:14px; background:var(--card); border:2px solid var(--ink); box-shadow:var(--shadow)}
+.hold-box h2{font-family:var(--display); font-weight:400; font-size:2.1rem; margin:0 0 .4rem}
+.hold-box .count{font-family:var(--display); font-size:3.4rem; color:var(--danger); font-variant-numeric:tabular-nums; line-height:1}
+
+/* Footer */
+footer{display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap; margin-top:1.4rem; font-size:.9rem; color:var(--muted)}
+.reset{min-height:44px; padding:.4rem .9rem; border-radius:8px; border:1.5px solid var(--line); background:transparent; color:var(--muted); cursor:pointer}
+.reset.armed{border-color:var(--danger); color:var(--danger); font-weight:700}
+
+/* Falling petals on the final screen */
+.petal{position:fixed; top:-40px; width:14px; height:10px; border-radius:60% 0 60% 0; pointer-events:none; z-index:40; opacity:0; animation:fall linear 1 forwards}
+@keyframes fall{0%{transform:translate(0,0) rotate(0deg); opacity:0} 8%{opacity:.95} 100%{transform:translate(var(--dx), 108vh) rotate(var(--rot)); opacity:.9}}
+@keyframes pop{from{transform:scale(.6); opacity:0} to{transform:scale(1); opacity:1}}
+.correct-flash{animation:pop .25s ease-out}
+
+@media (max-width:560px){
+  body{font-size:16px}
+  .wrap{padding:.6rem .6rem 1.5rem}
+  .strip{padding:.6rem .7rem}
+  .title{flex-basis:100%}
+  .plate,.card{padding:1rem}
+  .prompt{font-size:1.18rem}
+  .votes{grid-template-columns:1fr}
+  .row{gap:3px}
+}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none!important; transition:none!important}
+  .petal{display:none}
+}
+</style>
+</head>
+<body data-room="0">
+<div class="wrap">
+  <header class="strip" aria-label="Progress">
+    <p class="title">Hamlet Escape Room</p>
+    <ol class="pills" id="pills" aria-label="Rooms"></ol>
+    <div class="clockbox">
+      <button class="curtain" id="curtainBtn" type="button" aria-label="Hide behind the curtain" title="Hide behind the curtain">
+        <svg viewBox="0 0 26 26" aria-hidden="true"><path d="M2 3h22" stroke="#C99A2E" stroke-width="2.4" stroke-linecap="round"/><path d="M3 4c0 7 1 13 6 19H3z" fill="#9B2335"/><path d="M23 4c0 7-1 13-6 19h6z" fill="#9B2335"/><path d="M6 6c0 6 1 11 3 16M20 6c0 6-1 11-3 16" stroke="#6E1624" stroke-width="1" fill="none"/></svg>
+      </button>
+      <div class="meal" aria-live="off"><span>Leftovers</span><b id="meal">Still warm</b></div>
+      <div class="clock" id="clock" role="timer" aria-label="Time elapsed">00:00</div>
+    </div>
+  </header>
+
+  <section class="plate" id="plate" aria-live="off"></section>
+  <section class="card" id="card" aria-live="off"></section>
+  <div id="extra"></div>
+
+  <footer>
+    <span id="footerText"></span>
+    <button class="reset" id="resetBtn" type="button">Reset progress</button>
+  </footer>
+</div>
+<div id="live" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+<div id="hold"></div>
+
+<script>
+/* =====================================================================
+   TEACHER SETTINGS — change these freely; nothing below needs editing.
+   ===================================================================== */
+const CONFIG = {
+  teacherCode: "412",                  // Lock 1: the 3-digit code you give out in the main room
+  riddleAnswers: ["revenge","vengeance"], // Lock 3: any answer containing one of these words opens it
+  finalPassword: "GREAT DANE",         // Shown on the final screen; match it to your Pear Deck slide
+  lockSeconds: 15,                     // Lockout after a wrong answer (room restarts at question 1)
+  stareSeconds: 10,                    // Wait after clicking the wrong face in Lock 2
+  mercyMinutes: 20,                    // After this many minutes, wrong answers stop restarting the room
+  mercyLockSeconds: 5,                 // Lockout length once the mercy rule is on
+  copyBlockSeconds: 10,                // Wait after a copy, paste, right-click or drag attempt
+  leftoverMinutes: 3,                  // How often the leftovers clock gets colder
+  footerText: "Mr. Scott, English 12, Thanksgiving week",
+  finalSteps: [                        // Numbered steps on the final screen, in order
+    "Every teammate: type the password into the Pear Deck slide.",
+    "Stay in your breakout room. Mr. Scott will bring everyone back.",
+    "Be ready to defend your team’s vote on Hamlet’s madness."
+  ],
+  storageKey: "hamlet-escape-acts1-4-v1"  // Saved-progress key; change it to wipe every saved game
+};
+
+/* Lock 2 layout. TEACHER: the guilty face never moves. It is in the 2nd row,
+   5th face from the LEFT. It is the only face that is frowning, pale, and sweating. */
+const AUDIENCE = { rows:[6,7,6,7], guiltyRow:1, guiltyCol:4 };
+
+/* =====================================================================
+   ROOMS — correct option(s) listed FIRST; the app shuffles on screen.
+   single: options[0] is correct. multi ("pick two"): options[0] and [1] are correct.
+   ===================================================================== */
+const ROOMS = [
+  {
+    name: "The Castle Wall",
+    label: "Room 1 of 4, Act 1",
+    epigraph: "Act 1: A ghost with a message",
+    lines: "It’s past midnight and freezing on the castle wall. The guards have seen something twice now, and it looks exactly like the dead king. Tonight, Hamlet comes to see it for himself.",
+    questions: [
+      { type:"single", tag:"Skill: Mood",
+        prompt:"The play opens at midnight with nervous guards on a cold, dark castle wall. What mood does this opening create?",
+        options:[
+          "Tense and uneasy, like something is wrong in Denmark.",
+          "Cheerful and festive, like a royal celebration.",
+          "Calm and peaceful, like a quiet night at home.",
+          "Silly and lighthearted, like the start of a comedy."
+        ]},
+      { type:"single", tag:"Act 1",
+        prompt:"Even before he sees the Ghost, why is Hamlet so upset?",
+        options:[
+          "His father died, and his mother married his uncle about a month later.",
+          "Claudius has banished him from Denmark for good.",
+          "He lost a sword fight to Laertes in front of the whole court.",
+          "Horatio told the King all of Hamlet’s secrets."
+        ]},
+      { type:"multi", tag:"Act 1",
+        prompt:"What does the Ghost tell Hamlet?",
+        options:[
+          "Claudius killed him by pouring poison in his ear while he slept.",
+          "Hamlet should get revenge, but leave his mother’s punishment to heaven.",
+          "Gertrude helped Claudius plan the murder.",
+          "Hamlet should save him a plate of the wedding leftovers."
+        ]}
+    ]
+  },
+  {
+    name: "The Hallway",
+    label: "Room 2 of 4, Act 2",
+    epigraph: "Act 2: Everyone is watching Hamlet",
+    lines: "Hamlet is acting strange, and everyone has a theory. Polonius is sure it’s love. The King has called in two of Hamlet’s old school friends to keep an eye on him. And a group of actors just showed up at the castle.",
+    questions: [
+      { type:"single", tag:"Skill: Character",
+        prompt:"An actor cries real tears while performing a sad speech about a queen from an old story. Why does this make Hamlet angry at himself?",
+        options:[
+          "The actor shows more emotion over a story than Hamlet has shown about his own father’s murder.",
+          "Hamlet thinks the actor is secretly making fun of his mother.",
+          "Hamlet wanted to perform the speech himself and was not asked.",
+          "The speech reminds Hamlet that Ophelia turned him down."
+        ]},
+      { type:"single", tag:"Act 2",
+        prompt:"Polonius tells the King and Queen he has figured out why Hamlet is acting strange. What is his theory?",
+        options:[
+          "Hamlet has gone mad because Ophelia rejected his love.",
+          "Hamlet caught a fever on the trip home from school.",
+          "Hamlet is upset that Polonius gave him bad advice.",
+          "Hamlet is secretly planning to run away with the actors."
+        ]},
+      { type:"multi", tag:"Act 2",
+        prompt:"Which of these happen in Act 2?",
+        options:[
+          "Rosencrantz and Guildenstern admit that the King and Queen sent for them.",
+          "Hamlet asks the actors to perform a murder play, with some lines he will add.",
+          "Hamlet stabs Polonius through a curtain.",
+          "The actors cancel the show because they want to go home for Thanksgiving."
+        ]}
+    ]
+  },
+  {
+    name: "The Queen’s Room",
+    label: "Room 3 of 4, Act 3",
+    epigraph: "Act 3: The trap is sprung",
+    lines: "The King has seen the play, and now Hamlet is sure the Ghost told the truth. One more conversation tonight, with his mother, behind a closed door. Someone else is in the room, too.",
+    questions: [
+      { type:"single", tag:"Skill: Dramatic irony",
+        prompt:"Hamlet finds Claudius kneeling to pray and decides not to kill him yet. What does the audience know that Hamlet doesn’t?",
+        options:[
+          "Claudius can’t really pray. He knows his words aren’t reaching heaven.",
+          "Polonius is hiding nearby, ready to warn the King.",
+          "Claudius has already confessed everything to Gertrude.",
+          "The Ghost has changed its mind about revenge."
+        ]},
+      { type:"single", tag:"Act 3",
+        prompt:"Why does Hamlet kill Polonius?",
+        options:[
+          "He hears someone hiding behind the curtain in his mother’s room and thinks it might be the King.",
+          "Polonius tells the King about Hamlet’s plan to use the actors.",
+          "Polonius attacks Hamlet with a sword first.",
+          "The Ghost tells Hamlet to do it."
+        ]},
+      { type:"multi", tag:"Act 3",
+        prompt:"Which of these happen in Act 3?",
+        options:[
+          "Hamlet harshly rejects Ophelia while her father and the King secretly watch.",
+          "The Ghost appears in Gertrude’s room, but only Hamlet can see it.",
+          "Laertes breaks into the castle with an angry crowd behind him.",
+          "Claudius stops the play to ask for a second slice of pie."
+        ]}
+    ]
+  },
+  {
+    name: "The Throne Room",
+    label: "Room 4 of 4, Act 4",
+    epigraph: "Act 4: Grief and revenge",
+    lines: "Polonius is dead, and Hamlet is on a ship to England. Ophelia is falling apart. Her brother is back from France with an angry crowd behind him, and he wants answers.",
+    questions: [
+      { type:"single", tag:"Skill: Foil",
+        prompt:"Laertes and Hamlet have both lost a father. How does Laertes act as a foil to Hamlet in Act 4?",
+        options:[
+          "Laertes rushes into action right away, while Hamlet has put off revenge for months.",
+          "Laertes forgives his father’s killer, while Hamlet holds a grudge.",
+          "Laertes refuses to listen to Claudius, while Hamlet trusts him completely.",
+          "Laertes cares less about his family’s honor than Hamlet does."
+        ]},
+      { type:"single", tag:"Act 4",
+        prompt:"Claudius sends a sealed letter to England along with Hamlet. What does it say?",
+        options:[
+          "Put Hamlet to death as soon as he arrives.",
+          "Crown Hamlet as a prince of England.",
+          "Send soldiers to help Denmark fight Norway.",
+          "Keep Hamlet safe until the Queen calms down."
+        ]},
+      { type:"multi", tag:"Act 4",
+        prompt:"Which of these happen in Act 4?",
+        options:[
+          "Pirates attack Hamlet’s ship, and he ends up back in Denmark.",
+          "Ophelia hands out flowers and sings sad songs.",
+          "Hamlet and Laertes finally fight their fencing match.",
+          "Horatio hosts Friendsgiving, and Claudius brings the drinks."
+        ]}
+    ]
+  }
+];
+
+const LOCKS = {
+  1: { name:"Swear on It", next:"The Hallway", room:1,
+       lines:"Hamlet makes his friends swear, again and again, never to tell what they saw tonight. The Ghost even joins in from under the floor. Your teacher is keeping a secret too.",
+       epigraph:"Lock 1: A three-digit code" },
+  2: { name:"The Mousetrap", next:"The Queen’s Room", room:3,
+       lines:"The actors are performing a murder that looks a lot like the old king’s. Hamlet and Horatio aren’t watching the stage. They’re watching one face in the crowd.",
+       epigraph:"Lock 2: Watch the audience" },
+  3: { name:"Three Sons", next:"The Throne Room", room:4,
+       lines:"Three young men in this story have each lost a father. All three want the same thing.",
+       epigraph:"Lock 3: One word opens it" }
+};
+
+const LEFTOVERS = ["Still warm","Lukewarm","Room temp","Wedding buffet","Getting cold","Cold","Very cold","Science project"];
+const LOCK_LINES = [
+  "The Ghost is disappointed. Again.",
+  "Polonius has a theory about that answer. Please don’t ask him.",
+  "Rosencrantz and Guildenstern are reporting this to the King.",
+  "Something moved behind the curtain. Wait.",
+  "The leftovers are getting colder.",
+  "Horatio is writing this down."
+];
+const NUDGES = [
+  "Not quite. Read each line again.",
+  "Close, maybe. Think about what all three sons want.",
+  "Still locked. Hamlet has been putting this off for four acts."
+];
+
+const STEPS = [
+  {t:"intro"},
+  {t:"room", r:0}, {t:"vote"}, {t:"lock", n:1},
+  {t:"room", r:1}, {t:"lock", n:2},
+  {t:"room", r:2}, {t:"lock", n:3},
+  {t:"room", r:3},
+  {t:"final"}
+];
+
+/* =====================================================================
+   STATE
+   ===================================================================== */
+const FRESH = { step:0, q:0, startedAt:null, endedAt:null, lockUntil:0, lockRestart:true, lockLine:0,
+                attempts:0, vote:null, turkey:false, stareUntil:0, caught:false, copyUntil:0 };
+let state = load();
+let busy = false;
+let order = null, orderKey = "";
+let lastNudge = -1;
+let petalsDone = false;
+let hideTimer = null;
+
+function load(){
+  try{
+    const raw = localStorage.getItem(CONFIG.storageKey);
+    if(raw) return Object.assign({}, FRESH, JSON.parse(raw));
+  }catch(e){}
+  return Object.assign({}, FRESH);
+}
+function save(){ try{ localStorage.setItem(CONFIG.storageKey, JSON.stringify(state)); }catch(e){} }
+
+/* =====================================================================
+   HELPERS
+   ===================================================================== */
+const $ = id => document.getElementById(id);
+const now = () => Date.now();
+function esc(s){ return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function elapsed(){ if(!state.startedAt) return 0; return Math.max(0, Math.floor(((state.endedAt || now()) - state.startedAt)/1000)); }
+function fmt(s){ const m = Math.floor(s/60), r = s%60; return String(m).padStart(2,"0")+":"+String(r).padStart(2,"0"); }
+function leftIdx(s){ return Math.min(Math.floor(s/(CONFIG.leftoverMinutes*60)), LEFTOVERS.length-1); }
+function secsLeft(t){ return Math.max(0, Math.ceil((t - now())/1000)); }
+function announce(msg){ const l = $("live"); l.textContent = ""; setTimeout(()=>{ l.textContent = msg; }, 30); }
+function shuffle(a){ a = a.slice(); for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]] = [a[j],a[i]]; } return a; }
+function mercyOn(){ return elapsed() >= CONFIG.mercyMinutes*60; }
+function cur(){ return STEPS[state.step]; }
+function normalize(s){ return String(s).toLowerCase().replace(/[^a-z0-9]/g, ""); }
+
+/* =====================================================================
+   PLATE ART
+   ===================================================================== */
+function candlesArt(lit){
+  let s = '<svg class="plate-art" viewBox="0 0 220 48" aria-hidden="true">';
+  for(let i=0;i<3;i++){
+    const x = 22 + i*44, on = i < lit;
+    s += `<rect x="${x-6}" y="20" width="12" height="24" rx="2" fill="${on ? "#F4EBD8" : "none"}" stroke="currentColor" stroke-width="2" opacity="${on?1:.5}"/>`;
+    s += `<line x1="${x}" y1="20" x2="${x}" y2="15" stroke="currentColor" stroke-width="1.5" opacity="${on?1:.5}"/>`;
+    if(on) s += `<path d="M${x} 2 C${x+6} 8 ${x+5} 14 ${x} 15 C${x-5} 14 ${x-6} 8 ${x} 2Z" fill="#C99A2E"/><path d="M${x} 7 C${x+2} 10 ${x+2} 13 ${x} 13.5 C${x-2} 13 ${x-2} 10 ${x} 7Z" fill="#FFF3C4"/>`;
+  }
+  return s + "</svg>";
+}
+function masksArt(){
+  return `<svg class="plate-art" viewBox="0 0 220 48" aria-hidden="true">
+    <g transform="translate(8,6)"><path d="M2 4 Q18 0 34 4 Q34 26 18 34 Q2 26 2 4Z" fill="none" stroke="currentColor" stroke-width="2.2"/>
+      <path d="M9 13 q4 -3 7 0 M20 13 q4 -3 7 0" stroke="currentColor" stroke-width="2" fill="none"/><path d="M10 21 q8 8 16 0" stroke="currentColor" stroke-width="2" fill="none"/></g>
+    <g transform="translate(52,10)"><path d="M2 4 Q18 0 34 4 Q34 26 18 34 Q2 26 2 4Z" fill="currentColor" opacity=".18" stroke="currentColor" stroke-width="2.2"/>
+      <path d="M9 11 q4 3 7 0 M20 11 q4 3 7 0" stroke="currentColor" stroke-width="2" fill="none"/><path d="M10 26 q8 -7 16 0" stroke="currentColor" stroke-width="2" fill="none"/></g>
+  </svg>`;
+}
+function curtainArt(){
+  return `<svg class="plate-art" viewBox="0 0 220 48" aria-hidden="true">
+    <line x1="4" y1="4" x2="216" y2="4" stroke="#C99A2E" stroke-width="3" stroke-linecap="round"/>
+    <path d="M6 5 C10 18 12 30 20 46 L6 46Z M28 5 C24 18 22 30 20 46" fill="#9B2335" opacity=".85"/>
+    <path d="M214 5 C210 18 208 30 200 46 L214 46Z" fill="#9B2335" opacity=".85"/>
+    <path d="M40 5 Q60 14 80 5 Q100 14 120 5 Q140 14 160 5 Q180 14 200 5" fill="none" stroke="#9B2335" stroke-width="3"/>
+    <ellipse cx="150" cy="44" rx="7" ry="2.5" fill="currentColor" opacity=".35"/><path d="M146 44 v-5 q4 -3 8 0 v5" fill="currentColor" opacity=".35"/>
+  </svg>`;
+}
+function seaArt(){
+  return `<svg class="plate-art" viewBox="0 0 220 48" aria-hidden="true">
+    <path d="M2 38 q12 -8 24 0 t24 0 t24 0 t24 0 t24 0 t24 0 t24 0 t24 0 t24 0" fill="none" stroke="currentColor" stroke-width="2.5"/>
+    <path d="M70 30 h46 l-8 8 h-30z" fill="currentColor"/><line x1="92" y1="30" x2="92" y2="6" stroke="currentColor" stroke-width="2"/>
+    <path d="M93 8 l16 10 h-16z" fill="currentColor" opacity=".55"/>
+    <g transform="translate(176,22)"><circle r="3" fill="#C99A2E"/><g fill="#9B6BA3"><circle cx="0" cy="-6" r="4"/><circle cx="6" cy="0" r="4"/><circle cx="0" cy="6" r="4"/><circle cx="-6" cy="0" r="4"/></g><circle r="3" fill="#C99A2E"/></g>
+  </svg>`;
+}
+const MASK_SVG = `<svg class="mask-inline" viewBox="0 0 96 54" aria-hidden="true">
+  <g transform="translate(6,6)"><path d="M2 4 Q20 -1 38 4 Q38 30 20 40 Q2 30 2 4Z" fill="none" stroke="currentColor" stroke-width="2.5"/>
+  <path d="M10 15 q4 -3 8 0 M22 15 q4 -3 8 0" stroke="currentColor" stroke-width="2.2" fill="none"/><path d="M11 25 q9 9 18 0" stroke="currentColor" stroke-width="2.2" fill="none"/></g>
+  <g transform="translate(50,8)"><path d="M2 4 Q20 -1 38 4 Q38 30 20 40 Q2 30 2 4Z" fill="currentColor" opacity=".18" stroke="currentColor" stroke-width="2.5"/>
+  <path d="M10 13 q4 3 8 0 M22 13 q4 3 8 0" stroke="currentColor" stroke-width="2.2" fill="none"/><path d="M11 30 q9 -8 18 0" stroke="currentColor" stroke-width="2.2" fill="none"/></g></svg>`;
+const TURKEY_SVG = `<svg viewBox="0 0 40 40" aria-hidden="true">
+  <g fill="#8C6A2A"><ellipse cx="14" cy="16" rx="6" ry="11" transform="rotate(-35 14 16)"/><ellipse cx="20" cy="12" rx="6" ry="11"/><ellipse cx="26" cy="16" rx="6" ry="11" transform="rotate(35 26 16)"/></g>
+  <g fill="#C99A2E"><ellipse cx="16" cy="18" rx="4" ry="8" transform="rotate(-25 16 18)"/><ellipse cx="24" cy="18" rx="4" ry="8" transform="rotate(25 24 18)"/></g>
+  <ellipse cx="20" cy="27" rx="8" ry="8" fill="#6B3A22"/><circle cx="20" cy="18" r="4" fill="#6B3A22"/>
+  <path d="M20 19 l3 1 l-3 1z" fill="#E8A33A"/><path d="M19 21 q-1 4 1 5" stroke="#C0392B" stroke-width="2" fill="none"/>
+  <circle cx="19" cy="17" r=".9" fill="#fff"/></svg>`;
+
+/* =====================================================================
+   RENDER
+   ===================================================================== */
+function render(focus){
+  const st = cur();
+  let roomAttr = "0";
+  if(st.t === "room") roomAttr = String(st.r+1);
+  if(st.t === "vote") roomAttr = "1";
+  if(st.t === "lock") roomAttr = String(LOCKS[st.n].room);
+  if(st.t === "final") roomAttr = "4";
+  document.body.dataset.room = roomAttr;
+  renderPills();
+  renderPlate(st);
+  renderCard(st);
+  renderHold();
+  $("footerText").textContent = CONFIG.footerText;
+  tick();
+  if(focus){
+    const h = $("card-heading");
+    if(h) h.focus({preventScroll:false});
+  }
+}
+
+function renderPills(){
+  const labels = ["Act 1","Act 2","Act 3","Act 4"];
+  const roomSteps = STEPS.map((s,i)=>s.t==="room"?i:-1).filter(i=>i>=0);
+  const st = cur();
+  let html = "";
+  labels.forEach((lab,i)=>{
+    let cls = "pill", desc = "not started";
+    if(state.step > roomSteps[i] && !(st.t==="vote" && i===0)){ cls += " done"; desc = "done"; }
+    else if((st.t==="room" && st.r===i) || (st.t==="vote" && i===0)){ cls += " current"; desc = "current"; }
+    html += `<li class="${cls}" aria-label="${lab}, ${desc}">${lab}</li>`;
+  });
+  $("pills").innerHTML = html;
+}
+
+function renderPlate(st){
+  let label="", name="", lines="", epi="", art="", turkey = false;
+  if(st.t==="intro"){
+    label="Before you begin"; name="Four acts. One castle.";
+    lines="Four rooms, one for each act, with three locks between them. One teammate shares and clicks; everyone else does the thinking, out loud.";
+    epi="A review of Acts 1–4, last class before the break";
+  } else if(st.t==="room" || st.t==="vote"){
+    const r = st.t==="vote" ? 0 : st.r, R = ROOMS[r];
+    label = R.label; name = R.name; lines = R.lines; epi = R.epigraph;
+    const done = st.t==="vote" ? 3 : state.q;
+    if(r===0){ art = candlesArt(done); turkey = true; }
+    if(r===1) art = masksArt();
+    if(r===2) art = curtainArt();
+    if(r===3) art = seaArt();
+  } else if(st.t==="lock"){
+    const L = LOCKS[st.n];
+    label = `Lock ${st.n} of 3, next: ${L.next}`; name = L.name; lines = L.lines; epi = L.epigraph;
+  } else {
+    label="Out of the castle"; name="Escape complete";
+    lines="You made it through four acts without hiding behind a single curtain. Act 5 is waiting.";
+    epi="Hamlet, Acts 1–4";
+  }
+  $("plate").innerHTML =
+    `<p class="plate-label">${esc(label)}</p>
+     <h1 class="plate-name">${esc(name)}</h1>
+     <p class="plate-lines">${esc(lines)}</p>
+     <p class="plate-epi">${esc(epi)}</p>${art}
+     ${turkey ? `<button class="turkey" id="turkeyBtn" type="button" aria-label="Something small and feathery">${TURKEY_SVG}</button>` : ""}`;
+  if(turkey) $("turkeyBtn").addEventListener("click", foundTurkey);
+}
+
+function renderCard(st){
+  const c = $("card");
+  c.classList.remove("hidden-behind");
+  if(st.t==="intro") return introCard(c);
+  if(st.t==="room") return (state.lockUntil > now()) ? lockoutCard(c) : questionCard(c, st.r);
+  if(st.t==="vote") return voteCard(c);
+  if(st.t==="lock" && st.n===1) return codeCard(c);
+  if(st.t==="lock" && st.n===2) return mousetrapCard(c);
+  if(st.t==="lock" && st.n===3) return riddleCard(c);
+  return finalCard(c);
+}
+
+/* ---------- Intro ---------- */
+function introCard(c){
+  c.innerHTML = `
+    <h2 class="big" id="card-heading" tabindex="-1">How it works</h2>
+    <ul class="rules">
+      <li>Each room covers one act and asks <b>three questions</b>. Agree on an answer as a team, then lock it in.</li>
+      <li>Some questions ask you to <b>pick two</b> answers. You need both.</li>
+      <li>A wrong answer locks the room for <b>${CONFIG.lockSeconds} seconds</b> and sends you back to its first question.</li>
+      <li>Three locks stand between the rooms. One of them needs a teammate to visit the <b>main room</b>.</li>
+      <li>Stuck? Send one teammate to the main room to ask for a clue.</li>
+      <li>Copying and pasting is switched off. Talk it through instead.</li>
+      <li>Escape, and you get a password for Pear Deck.</li>
+    </ul>
+    <div class="actions"><button class="btn" id="startBtn" type="button">Start the clock</button></div>`;
+  $("startBtn").addEventListener("click", ()=>{
+    if(!state.startedAt) state.startedAt = now();
+    advance();
+  });
+}
+
+/* ---------- Questions ---------- */
+function questionCard(c, r){
+  const Q = ROOMS[r].questions[state.q];
+  const key = `${state.step}-${state.q}-${state.attempts}`;
+  if(orderKey !== key){ order = shuffle(Q.options.map((_,i)=>i)); orderKey = key; }
+  const multi = Q.type === "multi";
+  const pips = ROOMS[r].questions.map((_,i)=>`<span class="pip ${i<=state.q?"on":""}"></span>`).join("");
+  const opts = order.map((oi,k)=>`
+    <label class="opt"><input type="${multi?"checkbox":"radio"}" name="ans" value="${oi}" id="o${k}"> <span>${esc(Q.options[oi])}</span></label>`).join("");
+  c.innerHTML = `
+    <div class="card-top"><span class="tag">${esc(Q.tag)}</span>
+      <span class="pips" aria-label="Question ${state.q+1} of ${ROOMS[r].questions.length}">${pips}</span></div>
+    <h2 class="prompt" id="card-heading" tabindex="-1">${esc(Q.prompt)}</h2>
+    <fieldset aria-describedby="qhint">
+      <legend class="sr-only">Question ${state.q+1}: answer choices</legend>
+      ${multi ? `<p class="hint" id="qhint">Pick two.</p>` : `<p class="sr-only" id="qhint">Choose one answer.</p>`}
+      <div class="opts">${opts}</div>
+    </fieldset>
+    <div class="actions"><button class="btn" id="lockBtn" type="button" disabled>Lock in answer</button></div>
+    <p class="feedback" id="fb" role="status"></p>`;
+  const inputs = [...c.querySelectorAll('input[name="ans"]')];
+  const btn = $("lockBtn");
+  const sync = ()=>{
+    const n = inputs.filter(x=>x.checked).length;
+    btn.disabled = multi ? n !== 2 : n === 0;
+    if(multi) inputs.forEach(x=>{ if(!x.checked){ x.disabled = n >= 2; x.closest(".opt").classList.toggle("disabled", n >= 2); } });
+  };
+  inputs.forEach(i=>i.addEventListener("change", sync));
+  btn.addEventListener("click", ()=>{
+    if(busy || btn.disabled) return;
+    const chosen = inputs.filter(x=>x.checked).map(x=>+x.value).sort();
+    const right = multi ? (chosen.length===2 && chosen.join()==="0,1") : (chosen.length===1 && chosen[0]===0);
+    if(right) onCorrect(c, inputs, btn); else onWrong();
+  });
+}
+
+function onCorrect(c, inputs, btn){
+  busy = true;
+  inputs.forEach(i=>{ i.disabled = true; i.closest(".opt").classList.add("disabled"); });
+  btn.disabled = true;
+  $("fb").innerHTML = `<span class="correct-flash">Correct</span>`;
+  announce("Correct.");
+  setTimeout(()=>{
+    busy = false;
+    const st = cur();
+    if(state.q < ROOMS[st.r].questions.length-1){ state.q++; save(); render(true); }
+    else advance();
+  }, 1000);
+}
+
+function onWrong(){
+  const mercy = mercyOn();
+  state.attempts++;
+  state.lockRestart = !mercy;
+  state.lockUntil = now() + (mercy ? CONFIG.mercyLockSeconds : CONFIG.lockSeconds)*1000;
+  let n; do { n = Math.floor(Math.random()*LOCK_LINES.length); } while(n === state.lockLine && LOCK_LINES.length > 1);
+  state.lockLine = n;
+  save();
+  render(true);
+  announce("Not quite. The room is locked for a moment.");
+}
+
+function lockoutCard(c){
+  const restart = state.lockRestart;
+  c.innerHTML = `
+    <div class="lockout">
+      <h2 class="big" id="card-heading" tabindex="-1">Not quite. The room is locked.</h2>
+      <p class="line">${esc(LOCK_LINES[state.lockLine])}</p>
+      <div class="count" id="lockCount" aria-hidden="true">${secsLeft(state.lockUntil)}</div>
+      <p>${restart ? "When the count reaches zero, you start this room again from question 1."
+                   : "Mercy rule: when the count reaches zero, try this same question again."}</p>
+    </div>`;
+}
+
+/* ---------- Madness vote ---------- */
+function voteCard(c){
+  if(!state.vote){
+    c.innerHTML = `
+      <div class="card-top"><span class="tag">Team vote, no wrong answer</span></div>
+      ${MASK_SVG}
+      <h2 class="prompt" id="card-heading" tabindex="-1">At the end of Act 1, Hamlet warns his friends he might start acting strange on purpose. Now that you’ve read through Act 4: is his madness an act, or is he really losing it?</h2>
+      <p>Decide together. Your answer comes back at the end.</p>
+      <div class="votes" role="group" aria-label="Your team's vote">
+        <button class="vote" type="button" data-v="An act">An act</button>
+        <button class="vote" type="button" data-v="Really losing it">Really losing it</button>
+      </div>`;
+    c.querySelectorAll(".vote").forEach(b=>b.addEventListener("click", ()=>{
+      state.vote = b.dataset.v; save(); render(true);
+    }));
+  } else {
+    const reply = state.vote === "An act"
+      ? "Then he’s a very committed actor. Polonius is not convinced."
+      : "Gertrude agrees with you. Hamlet would like a word.";
+    c.innerHTML = `
+      <div class="card-top"><span class="tag">Team vote: ${esc(state.vote)}</span></div>
+      ${MASK_SVG}
+      <h2 class="prompt" id="card-heading" tabindex="-1">${esc(reply)}</h2>
+      <p>Keep your reasons handy. You will defend this vote in the main room.</p>
+      <div class="actions"><button class="btn" id="goBtn" type="button">Continue to Lock 1</button></div>`;
+    $("goBtn").addEventListener("click", advance);
+  }
+}
+
+/* ---------- Lock 1: teacher code ---------- */
+function codeCard(c){
+  c.innerHTML = `
+    <div class="card-top"><span class="tag">Lock 1 of 3, next: The Hallway</span></div>
+    <h2 class="prompt" id="card-heading" tabindex="-1">Send one teammate to the main room. The Ghost (your teacher) will give them a three-digit code.</h2>
+    <div class="field">
+      <label for="codeIn">Type the Ghost’s code</label>
+      <input id="codeIn" inputmode="numeric" autocomplete="off" maxlength="3" pattern="[0-9]*" aria-describedby="fb">
+      <button class="btn" id="codeBtn" type="button">Open the lock</button>
+    </div>
+    <p class="feedback" id="fb" role="status"></p>`;
+  const inp = $("codeIn");
+  inp.addEventListener("input", ()=>{ inp.value = inp.value.replace(/\D/g,"").slice(0,3); });
+  const go = ()=>{
+    const v = inp.value.trim();
+    if(v.length !== 3){ setFb("bad","The code has three digits."); return; }
+    if(v === String(CONFIG.teacherCode)){ setFb("ok","Sworn and sealed. The lock clicks open."); announce("Lock open."); setTimeout(advance, 900); }
+    else { setFb("bad","That isn’t the Ghost’s number. Check with your teacher in the main room."); }
+  };
+  $("codeBtn").addEventListener("click", go);
+  inp.addEventListener("keydown", e=>{ if(e.key==="Enter") go(); });
+}
+function setFb(kind, msg){ const f = $("fb"); f.className = "feedback " + kind; f.textContent = msg; }
+
+/* ---------- Lock 2: the Mousetrap ---------- */
+const SKIN = ["#F2C9A6","#D9A27C","#A9704B","#7B4B2F","#E8B48F","#5E3B27","#C68B63","#F5D6BC"];
+const HAIR = ["#2B1D14","#6B4226","#B8863B","#1A1A1A","#8A3B1F","#4A3A2A","#D9C27A","#3B2A3F"];
+const HATS = ["#274C77","#6A3E66","#9B2335","#2B6461","#C99A2E"];
+function faceSvg(guilty, i){
+  if(guilty){
+    return `<svg viewBox="0 0 48 48" aria-hidden="true">
+      <circle cx="24" cy="26" r="17" fill="#D9DFC9" stroke="#1D1A24" stroke-width="1.5"/>
+      <path d="M8 20 Q24 4 40 20 Q34 12 24 12 Q14 12 8 20Z" fill="#3B2A1E"/>
+      <path d="M14 20 l7 3 M34 20 l-7 3" stroke="#1D1A24" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="18" cy="26" r="2.6" fill="#fff"/><circle cx="18" cy="26" r="1.3" fill="#1D1A24"/>
+      <circle cx="30" cy="26" r="2.6" fill="#fff"/><circle cx="30" cy="26" r="1.3" fill="#1D1A24"/>
+      <path d="M17 37 q7 -6 14 0" stroke="#1D1A24" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M38 16 q3 5 0 7 q-3 -2 0 -7Z" fill="#7CC4E8"/></svg>`;
+  }
+  const skin = SKIN[(i*5) % SKIN.length], hair = HAIR[(i*3) % HAIR.length];
+  const hat = i % 4 === 1 ? `<path d="M9 16 Q24 2 39 16 Z" fill="${HATS[i % HATS.length]}"/><path d="M33 9 q8 -6 12 -2" stroke="${HATS[(i+2) % HATS.length]}" stroke-width="2.5" fill="none"/>`
+            : `<path d="M8 21 Q24 4 40 21 Q35 13 24 13 Q13 13 8 21Z" fill="${hair}"/>`;
+  return `<svg viewBox="0 0 48 48" aria-hidden="true">
+    <circle cx="24" cy="26" r="17" fill="${skin}" stroke="#1D1A24" stroke-width="1.5"/>${hat}
+    <path d="M15 25 q3 -3 6 0 M27 25 q3 -3 6 0" stroke="#1D1A24" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M16 32 q8 8 16 0" stroke="#1D1A24" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <circle cx="14" cy="31" r="2.4" fill="#E07A6A" opacity=".35"/><circle cx="34" cy="31" r="2.4" fill="#E07A6A" opacity=".35"/></svg>`;
+}
+const STAGE_SVG = `<svg class="stage" viewBox="0 0 200 64" aria-hidden="true">
+  <rect x="0" y="50" width="200" height="14" fill="#5A3A2A"/>
+  <path d="M0 0 h200 v6 q-25 10 -50 0 q-25 10 -50 0 q-25 10 -50 0 q-25 10 -50 0z" fill="#9B2335"/>
+  <path d="M0 0 h14 c0 20 2 36 8 50 h-22z M200 0 h-14 c0 20 -2 36 -8 50 h22z" fill="#9B2335"/>
+  <rect x="62" y="40" width="40" height="8" rx="3" fill="#3E6B3A"/><g fill="#E7C9A0"><circle cx="70" cy="36" r="5"/></g>
+  <rect x="73" y="33" width="26" height="8" rx="4" fill="#7A5C9B"/><path d="M64 30 l3 -5 l3 4 l3 -4 l3 5z" fill="#C99A2E"/>
+  <circle cx="128" cy="22" r="5" fill="#E7C9A0"/><rect x="123" y="27" width="10" height="20" rx="3" fill="#2A2A33"/>
+  <path d="M123 31 l-12 4" stroke="#2A2A33" stroke-width="3" stroke-linecap="round"/><rect x="106" y="33" width="5" height="7" rx="1" fill="#6FBF73"/>
+</svg>`;
+function mousetrapCard(c){
+  const waiting = state.stareUntil > now();
+  let rows = "", idx = 0;
+  AUDIENCE.rows.forEach((n,ri)=>{
+    rows += `<div class="row">`;
+    for(let ci=0; ci<n; ci++){
+      const guilty = (ri===AUDIENCE.guiltyRow && ci===AUDIENCE.guiltyCol);
+      const lab = `${guilty ? "Pale, frowning face" : "Smiling face"}, row ${ri+1}, seat ${ci+1}`;
+      rows += `<button class="face" type="button" data-guilty="${guilty?1:0}" aria-label="${lab}" ${waiting||state.caught?"disabled":""}>${faceSvg(guilty, idx++)}</button>`;
+    }
+    rows += `</div>`;
+  });
+  c.innerHTML = `
+    <div class="card-top"><span class="tag">Lock 2 of 3, next: The Queen’s Room</span></div>
+    <h2 class="prompt" id="card-heading" tabindex="-1">${state.caught ? "Caught." : "The poison scene is starting. Find the one face in the audience that isn’t enjoying the show, and click it."}</h2>
+    <div class="theater ${state.caught?"dark":""}" id="theater" role="group" aria-label="The audience at Hamlet’s play">${STAGE_SVG}${rows}</div>
+    ${waiting ? `<p class="wait" id="waitMsg">Wrong face. The King noticed you staring. Look away for <span id="stareCount">${secsLeft(state.stareUntil)}</span> seconds.</p>` : ""}
+    ${state.caught ? `<p class="feedback ok" role="status">The King jumps up, calls for lights, and storms out. The Ghost told the truth.</p>
+      <div class="actions"><button class="btn" id="goBtn" type="button">Enter the Queen’s Room</button></div>`
+      : `<p class="feedback" id="fb" role="status"></p>`}`;
+  if(state.caught){ $("goBtn").addEventListener("click", ()=>{ state.caught = false; advance(); }); return; }
+  c.querySelectorAll(".face").forEach(b=>b.addEventListener("click", ()=>pickFace(b)));
+}
+function pickFace(target){
+  if(busy || state.stareUntil > now()) return;
+  busy = true;
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(target.dataset.guilty === "1"){
+    $("theater").classList.add("dark");
+    announce("Caught. The King storms out of the play.");
+    setTimeout(()=>{ busy = false; state.caught = true; save(); render(true); }, reduce ? 0 : 900);
+  } else {
+    target.classList.add("shake");
+    announce("Wrong face. Wait before you try again.");
+    setTimeout(()=>{ busy = false; state.stareUntil = now() + CONFIG.stareSeconds*1000; save(); render(true); }, reduce ? 0 : 450);
+  }
+}
+
+/* ---------- Lock 3: riddle ---------- */
+function riddleCard(c){
+  c.innerHTML = `
+    <div class="card-top"><span class="tag">Lock 3 of 3, next: The Throne Room</span></div>
+    <h2 class="prompt" id="card-heading" tabindex="-1">Answer the riddle in one word.</h2>
+    <p class="riddle">
+      <span>Hamlet promised it in Act 1 and keeps putting it off.</span>
+      <span>Laertes wants it the second he hears the news.</span>
+      <span>Fortinbras wants it for the father he lost in battle.</span>
+      <span>Three sons, one goal. What is it?</span>
+    </p>
+    <div class="field">
+      <label for="ridIn">Your answer</label>
+      <input id="ridIn" class="wide" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="fb">
+      <button class="btn" id="ridBtn" type="button">Check answer</button>
+    </div>
+    <p class="feedback" id="fb" role="status"></p>`;
+  const inp = $("ridIn");
+  const go = ()=>{
+    const v = normalize(inp.value);
+    if(!v){ setFb("bad","Type an answer first."); return; }
+    if(CONFIG.riddleAnswers.some(a => v.includes(normalize(a)))){
+      setFb("ok","That’s it. The doors to the throne room swing open.");
+      announce("Correct. The lock opens."); setTimeout(advance, 1000);
+    } else {
+      let n; do { n = Math.floor(Math.random()*NUDGES.length); } while(n===lastNudge);
+      lastNudge = n;
+      setFb("bad", NUDGES[n] + " One teammate can ask your teacher for a clue in the main room.");
+    }
+  };
+  $("ridBtn").addEventListener("click", go);
+  inp.addEventListener("keydown", e=>{ if(e.key==="Enter") go(); });
+}
+
+/* ---------- Final ---------- */
+function finalCard(c){
+  const s = elapsed(), li = leftIdx(s);
+  const line = li < LEFTOVERS.length-1 ? `You escaped while the leftovers were ${LEFTOVERS[li].toLowerCase()}.` : "You escaped. The leftovers are now a science project.";
+  const steps = CONFIG.finalSteps.map(x=>`<li>${esc(x)}</li>`).join("");
+  const badges = [`Time: ${fmt(s)}`];
+  if(state.turkey) badges.push("Turkey found");
+  c.innerHTML = `
+    <h2 class="big" id="card-heading" tabindex="-1">${esc(line)}</h2>
+    <p>Your time: <b style="font-variant-numeric:tabular-nums">${fmt(s)}</b></p>
+    <p style="margin-bottom:0">The password is:</p>
+    <div class="password">${esc(CONFIG.finalPassword)}</div>
+    <ol class="steps">${steps}</ol>
+    <div class="badges">${badges.map(b=>`<span class="badge">${esc(b)}</span>`).join("")}</div>
+    ${state.vote ? `<div class="echo"><b>Your vote on Hamlet’s madness: ${esc(state.vote)}.</b> Be ready to defend it in the main room.</div>` : ""}`;
+  if(!petalsDone){ petalsDone = true; dropPetals(); }
+}
+function dropPetals(){
+  if(window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const colors = ["#9B6BA3","#C99A2E","#E8B4C0","#F4EBD8","#6FA27A"];
+  for(let i=0;i<16;i++){
+    const p = document.createElement("span");
+    p.className = "petal";
+    p.style.left = (Math.random()*96) + "vw";
+    p.style.background = colors[i % colors.length];
+    p.style.setProperty("--dx", (Math.random()*120 - 60) + "px");
+    p.style.setProperty("--rot", (Math.random()*540 + 180) + "deg");
+    p.style.animationDuration = (5 + Math.random()*4) + "s";
+    p.style.animationDelay = (Math.random()*2.5) + "s";
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(), 12000);
+  }
+}
+
+/* ---------- Turkey ---------- */
+function foundTurkey(){
+  state.turkey = true; save();
+  $("extra").innerHTML = `<div class="note" role="status">
+    <span>🦃 You found a turkey on the castle wall. The guards thought it was another ghost. <b>Turkey found</b> will appear on your final screen.</span>
+    <button class="btn ghost" type="button" id="noteClose">Back to work</button></div>`;
+  $("noteClose").addEventListener("click", ()=>{ $("extra").innerHTML = ""; const h = $("card-heading"); if(h) h.focus(); });
+  $("noteClose").focus();
+}
+
+/* ---------- Copy guard ---------- */
+function blockCopy(e){
+  e.preventDefault();
+  if(state.copyUntil > now()) return;
+  state.copyUntil = now() + CONFIG.copyBlockSeconds*1000;
+  save(); renderHold();
+  announce("Hold on. Copying and pasting is switched off.");
+}
+function renderHold(){
+  const h = $("hold");
+  if(state.copyUntil > now()){
+    if(!h.innerHTML){
+      h.innerHTML = `<div class="hold" role="alertdialog" aria-modal="true" aria-labelledby="holdT">
+        <div class="hold-box"><h2 id="holdT">Hold on.</h2>
+        <p>Copying, pasting and right-clicking are switched off in here. Talk it over with your team instead.</p>
+        <div class="count" id="holdCount">${secsLeft(state.copyUntil)}</div></div></div>`;
+    }
+  } else h.innerHTML = "";
+}
+
+/* ---------- Curtain ---------- */
+function hideBehindCurtain(){
+  const c = $("card");
+  if(hideTimer) return;
+  c.classList.add("hidden-behind");
+  $("extra").insertAdjacentHTML("afterbegin", `<p class="hideline" id="hideLine" role="status">You hid behind the curtain. Polonius tried this in Act 3. It did not go well.</p>`);
+  hideTimer = setTimeout(()=>{
+    c.classList.remove("hidden-behind");
+    const l = $("hideLine"); if(l) l.remove();
+    hideTimer = null;
+  }, 3000);
+}
+
+/* ---------- Flow ---------- */
+function advance(){
+  state.step = Math.min(state.step+1, STEPS.length-1);
+  state.q = 0; state.lockUntil = 0; state.stareUntil = 0;
+  if(cur().t === "final" && !state.endedAt) state.endedAt = now();
+  $("extra").innerHTML = "";
+  save(); render(true);
+}
+
+/* ---------- Clock tick ---------- */
+function tick(){
+  const s = elapsed();
+  $("clock").textContent = fmt(s);
+  $("meal").textContent = LEFTOVERS[leftIdx(s)];
+  const st = cur();
+  if(st.t==="room" && state.lockUntil){
+    if(now() >= state.lockUntil){
+      state.lockUntil = 0;
+      if(state.lockRestart) state.q = 0;
+      save(); render(true); return;
+    }
+    const el = $("lockCount"); if(el) el.textContent = secsLeft(state.lockUntil);
+  }
+  if(st.t==="lock" && st.n===2 && state.stareUntil){
+    if(now() >= state.stareUntil){ state.stareUntil = 0; save(); render(true); return; }
+    const el = $("stareCount"); if(el) el.textContent = secsLeft(state.stareUntil);
+  }
+  if(state.copyUntil){
+    if(now() >= state.copyUntil){ state.copyUntil = 0; save(); renderHold(); }
+    else { const el = $("holdCount"); if(el) el.textContent = secsLeft(state.copyUntil); }
+  }
+}
+
+/* ---------- Reset ---------- */
+let resetArmed = null;
+function onReset(){
+  const b = $("resetBtn");
+  if(!resetArmed){
+    b.textContent = "Click again to erase"; b.classList.add("armed");
+    resetArmed = setTimeout(()=>{ resetArmed = null; b.textContent = "Reset progress"; b.classList.remove("armed"); }, 4000);
+    return;
+  }
+  clearTimeout(resetArmed); resetArmed = null;
+  try{ localStorage.removeItem(CONFIG.storageKey); }catch(e){}
+  state = Object.assign({}, FRESH); orderKey = ""; petalsDone = false; busy = false;
+  b.textContent = "Reset progress"; b.classList.remove("armed");
+  $("extra").innerHTML = "";
+  render(true);
+  announce("Progress erased.");
+}
+
+/* ---------- Boot ---------- */
+function boot(){
+  ["copy","cut","paste","contextmenu","dragstart","drop"].forEach(ev=>document.addEventListener(ev, blockCopy));
+  $("curtainBtn").addEventListener("click", hideBehindCurtain);
+  $("resetBtn").addEventListener("click", onReset);
+  render(false);
+  setInterval(tick, 250);
+}
+boot();
+</script>
+</body>
+</html>
